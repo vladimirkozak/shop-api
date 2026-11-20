@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class ProductsService {
-  private products = [
-    { id: 1, name: 'T-short', price: 1500 },
-    { id: 2, name: 'Mug', price: 500 },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    return this.products;
+    return this.prisma.product.findMany();
   }
 
-  findOne(id: number) {
-    return this.products.find(product => product.id === id);
+  async findOne(id: number) {
+    const product = await this.prisma.product.findUnique({ where: { id } });
+    if (!product) throw new NotFoundException();
+    return product;
   }
 }
