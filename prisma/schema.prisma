@@ -19,6 +19,7 @@ model Product {
   price       Decimal  @db.Decimal(10, 2)
   inStock     Boolean  @default(true)
   createdAt   DateTime @default(now())
+  cartItems CartItem[]
 }
 
 model User {
@@ -26,4 +27,16 @@ model User {
   email        String   @unique
   passwordHash String
   createdAt    DateTime @default(now())
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+
+  @@unique([userId, productId])
 }
