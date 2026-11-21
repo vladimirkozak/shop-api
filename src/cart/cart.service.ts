@@ -25,4 +25,21 @@ export class CartService {
       update: { quantity: { increment: quantity } },
     });
   }
+
+  async update(userId: string, id: number, quantity: number) {
+    const { count } = await this.prisma.cartItem.updateMany({
+        where: { id, userId },
+        data: { quantity },
+    });
+    if (count === 0) throw new NotFoundException('Cart item not found');
+    return this.get(userId);
+  }
+
+  async remove(userId: string, id: number) {
+    const { count } = await this.prisma.cartItem.deleteMany({
+      where: { id, userId },
+    });
+    if (count === 0) throw new NotFoundException('Cart item not found');
+    return this.get(userId);
+  }
 }
