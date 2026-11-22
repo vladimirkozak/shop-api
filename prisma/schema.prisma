@@ -28,6 +28,7 @@ model User {
   passwordHash String
   createdAt    DateTime @default(now())
   cartItems CartItem[]
+  orders Order[]
 }
 
 model CartItem {
@@ -39,4 +40,23 @@ model CartItem {
   quantity  Int
 
   @@unique([userId, productId])
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  total     Decimal     @db.Decimal(10, 2)
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   Int
+  productName String
+  unitPrice   Decimal @db.Decimal(10, 2)
+  quantity    Int
 }
